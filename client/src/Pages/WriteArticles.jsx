@@ -3,7 +3,7 @@ import React from 'react'
 const WriteArticles = () => {
   return (
     <div>
-      Write Articles
+      <h1>Write Articles</h1>
     </div>
   )
 }
