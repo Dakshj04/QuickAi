@@ -11,9 +11,7 @@ Add these environment variables in your Vercel project settings:
 - `CLOUDINARY_API_SECRET` - Your Cloudinary API secret
 - `OPENAI_API_KEY` - Your OpenAI API key
 
-### Optional Variables:
 - `CLERK_SECRET_KEY` - Your Clerk secret key (for authentication)
-- `NODE_ENV` - Set to "production" for Vercel deployment
 
 ## Deployment Steps:
 

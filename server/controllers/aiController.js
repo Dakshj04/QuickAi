@@ -11,20 +11,6 @@ const AI = new OpenAI({
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
 
-// Helper function to upload buffer to Cloudinary
-const uploadBufferToCloudinary = async (buffer, options = {}) => {
-    return new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-            options,
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-            }
-        );
-        uploadStream.end(buffer);
-    });
-};
-
 export const generateArticles = async (req, res) => {
     try {
         const { userId } = req.auth();
@@ -155,12 +141,10 @@ export const removeImageBackground = async (req, res) => {
         if (plan !== 'premium') {
             return res.json({ success: false, message: "This feature is only available on premium subscriptions"});
         }  
+         
         
-        if (!image || !image.buffer) {
-            return res.status(400).json({ success: false, message: "No image file received" });
-        }
 
-        const uploadResult = await uploadBufferToCloudinary(image.buffer, {
+        const {secure_url} = await cloudinary.uploader.upload(image.path,{
             transformation: [
                 {
                     effect:'background_removal',
@@ -169,8 +153,7 @@ export const removeImageBackground = async (req, res) => {
             ]
         });
 
-        const { secure_url } = uploadResult;
-
+        // FIX: Use secure_url instead of content
         await sql`insert into creations (user_id, prompt, content, type) values (${userId}, 'Remove background from image', ${secure_url}, 'image')`;
 
         res.json({ success: true, content: secure_url })
@@ -191,7 +174,7 @@ export const removeImageObject = async (req, res) => {
         const { object } = req.body;
         
         // Validate inputs
-        if (!image || !image.buffer) {
+        if (!image) {
             console.log('ERROR: No image file received');
             return res.status(400).json({ success: false, message: "No image file received" });
         }
@@ -205,13 +188,13 @@ export const removeImageObject = async (req, res) => {
             return res.status(403).json({ success: false, message: "This feature is only available on premium subscriptions"});
         }  
         
-        console.log('Uploading to cloudinary with buffer');
+        console.log('Uploading to cloudinary:', image.path);
         
         // Upload to Cloudinary with error handling
         let uploadResult;
         try {
-            uploadResult = await uploadBufferToCloudinary(image.buffer, {
-                folder: 'object-removal',
+            uploadResult = await cloudinary.uploader.upload(image.path, {
+                folder: 'object-removal', // Organize uploads
                 resource_type: 'image'
             });
             console.log('Cloudinary upload result:', uploadResult);
@@ -263,7 +246,16 @@ export const removeImageObject = async (req, res) => {
             console.log('Image processed successfully but failed to save to database');
         }
 
-
+        // Clean up temporary file
+        try {
+            if (image.path) {
+                const fs = await import('fs');
+                fs.unlinkSync(image.path);
+                console.log('Temporary file cleaned up');
+            }
+        } catch (cleanupError) {
+            console.log('Failed to clean up temporary file:', cleanupError.message);
+        }
 
         res.json({ success: true, content: imageUrl });
         
@@ -282,7 +274,7 @@ export const resumeReview = async (req, res) => {
         const plan = req.plan;
         const resume = req.file;
         
-        if (!resume || !resume.buffer) {
+        if (!resume) {
             console.log('ERROR: No resume file received');
             return res.json({ success: false, message: "No resume file received" });
         }
@@ -301,8 +293,9 @@ export const resumeReview = async (req, res) => {
             return res.json({ success: false, message: "Resume file size exceeds allowed size 5 MB" });
         }
       
-        console.log('Reading PDF file from buffer...');
-        const pdfData = await pdf(resume.buffer);
+        console.log('Reading PDF file...');
+        const dataBuffer = fs.readFileSync(resume.path);
+        const pdfData = await pdf(dataBuffer);
         
         console.log('PDF text extracted, length:', pdfData.text.length);
       

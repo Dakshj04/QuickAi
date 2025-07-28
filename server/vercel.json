@@ -2,14 +2,26 @@
   "version": 2,
   "builds": [
     {
-      "src": "isolated-server.js",
+      "src": "server.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    },
+    {
       "src": "/(.*)",
-      "dest": "isolated-server.js"
+      "dest": "server.js"
     }
-  ]
+  ],
+  "functions": {
+    "server.js": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
