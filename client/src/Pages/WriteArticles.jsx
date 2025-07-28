@@ -1,4 +1,4 @@
-import { Edit, Sparkles } from 'lucide-react'
+import { Edit, Sparkles, Copy, Check } from 'lucide-react'
 import React, { useState } from 'react'
 import axios from  'axios'
 import { useAuth } from '@clerk/clerk-react';
@@ -18,9 +18,8 @@ const WriteArticles = () => {
   const [input, setInput] = useState('')
   const [loading,setLoading]=useState(false)
   const [content,setContent]=useState('')
+  const [copied, setCopied] = useState(false)
   const {getToken}=useAuth()
-
-
 
   const onSubmitHandler=async (e) => {
     e.preventDefault();
@@ -33,6 +32,7 @@ const WriteArticles = () => {
       })
       if (data.success) {
         setContent(data.content)
+        toast.success('Article generated successfully!');
       }
       else{
         toast.error(data.message)
@@ -41,7 +41,21 @@ const WriteArticles = () => {
       toast.error(error.message)
     }
     setLoading(false)
+  }
 
+  const handleCopyArticle = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopied(true)
+      toast.success('Article copied to clipboard!')
+      
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setCopied(false)
+      }, 2000)
+    } catch (error) {
+      toast.error('Failed to copy article')
+    }
   }
 
   return (
@@ -85,7 +99,7 @@ const WriteArticles = () => {
             </div>
         
           <div>
-            <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#226BFF] to-[#65ADFF] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
+            <button disabled={loading||!input.trim()} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#226BFF] to-[#65ADFF] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-opacity'>
               {
                 loading? <span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>:
                 <Edit className='w-5'/>
@@ -99,9 +113,29 @@ const WriteArticles = () => {
       {/* Right Column */}
       <div className='w-full max-w-lg p-5 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96 max-h-[600px] self-start '>
         
-       <div className='flex items-center gap-3'>
-        <Edit className='w-5 h-5 text-[#4A7AFF] '/>
-        <h1 className='text-xl font-semibold text-gray-800'>Generated Article</h1>
+       <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-3'>
+          <Edit className='w-5 h-5 text-[#4A7AFF] '/>
+          <h1 className='text-xl font-semibold text-gray-800'>Generated Article</h1>
+        </div>
+        {content && (
+          <button
+            onClick={handleCopyArticle}
+            className='flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors'
+          >
+            {copied ? (
+              <>
+                <Check className='w-4 h-4 text-green-600' />
+                <span className='text-green-600'>Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className='w-4 h-4' />
+                <span>Copy</span>
+              </>
+            )}
+          </button>
+        )}
        </div>
        {
         !content?(

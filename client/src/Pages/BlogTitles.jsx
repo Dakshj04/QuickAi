@@ -26,12 +26,13 @@ const BlogTitles = () => {
       )
       if (data.success) {
         setContent(data.content)
+        toast.success('Blog titles generated successfully!');
       }
       else{
         toast.error(data.message)
       }
     } catch (error) {
-      toast.error(data.message)
+      toast.error(error.message)
       
     }
     setLoading(false)
@@ -77,7 +78,7 @@ const BlogTitles = () => {
             </div>
         
           <div>
-            <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#C341F6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
+            <button disabled={loading||!input.trim()} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#C341F6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-opacity'>
               {
                 loading? <span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>
                 : <Hash className='w-5'/>
