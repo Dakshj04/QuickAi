@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "test-endpoint.js",
+      "src": "minimal-test.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "test-endpoint.js"
+      "dest": "minimal-test.js"
     }
   ]
 }

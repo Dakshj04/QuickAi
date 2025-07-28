@@ -37,8 +37,8 @@ app.get('/test-db', async (req, res) => {
       return res.json({ success: false, message: 'DATABASE_URL not provided' });
     }
     
-    const { neon } = await import('@neondatabase/serverless');
-    const sql = neon(process.env.DATABASE_URL);
+    const neonModule = await import('@neondatabase/serverless');
+    const sql = neonModule.neon(process.env.DATABASE_URL);
     
     const result = await sql`SELECT 1 as test`;
     res.json({ success: true, message: 'Database connection successful', result });
@@ -54,7 +54,9 @@ app.get('/test-cloudinary', async (req, res) => {
       return res.json({ success: false, message: 'Cloudinary credentials not provided' });
     }
     
-    const { v2 as cloudinary } = await import('cloudinary');
+    const cloudinaryModule = await import('cloudinary');
+    const cloudinary = cloudinaryModule.v2;
+    
     cloudinary.config({
       cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
@@ -65,6 +67,23 @@ app.get('/test-cloudinary', async (req, res) => {
   } catch (error) {
     res.json({ success: false, message: 'Cloudinary configuration failed', error: error.message });
   }
+});
+
+// Test environment variables
+app.get('/test-env', (req, res) => {
+  res.json({
+    success: true,
+    environment_variables: {
+      DATABASE_URL: process.env.DATABASE_URL ? 'Set' : 'Not set',
+      CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME ? 'Set' : 'Not set',
+      CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY ? 'Set' : 'Not set',
+      CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET ? 'Set' : 'Not set',
+      CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY ? 'Set' : 'Not set',
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY ? 'Set' : 'Not set',
+      GEMINI_API_KEY: process.env.GEMINI_API_KEY ? 'Set' : 'Not set',
+      NODE_ENV: process.env.NODE_ENV || 'development'
+    }
+  });
 });
 
 // Global error handler

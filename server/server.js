@@ -32,16 +32,16 @@ let aiRouter, userRouter;
 try {
   // Only import and use Clerk if the secret key is available
   if (process.env.CLERK_SECRET_KEY) {
-    const { clerkMiddleware, requireAuth } = await import('@clerk/express');
+    const clerkModule = await import('@clerk/express');
     
-    app.use(clerkMiddleware());
+    app.use(clerkModule.clerkMiddleware());
     
     // Import routes
     aiRouter = (await import('./routes/aiRoutes.js')).default;
     userRouter = (await import('./routes/userRoutes.js')).default;
     
-    app.use('/api/ai', requireAuth(), aiRouter);
-    app.use('/api/user', requireAuth(), userRouter);
+    app.use('/api/ai', clerkModule.requireAuth(), aiRouter);
+    app.use('/api/user', clerkModule.requireAuth(), userRouter);
     
     console.log('Server running with Clerk authentication');
   } else {
