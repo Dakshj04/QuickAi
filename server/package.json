@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "server": "nodemon server.js",
+    "server": "nodemon isolated-server.js",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "build": "echo 'No build step required'"

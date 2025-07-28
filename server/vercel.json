@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "minimal-test.js",
+      "src": "isolated-server.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "minimal-test.js"
+      "dest": "isolated-server.js"
     }
   ]
 }
