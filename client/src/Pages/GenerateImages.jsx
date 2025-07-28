@@ -1,5 +1,9 @@
 import { Image, Sparkles } from 'lucide-react'
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
+import Markdown from 'react-markdown';
+import axios from 'axios'
+axios.defaults.baseURL=import.meta.env.VITE_BASE_URL;
 
 const GenerateImages = () => {
   const ImageStyle = ['Realisic','Ghibli style','Anime style','Cartoon style','Fantasy style','Realistic style','3D style','Portrait style']

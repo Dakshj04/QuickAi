@@ -10,11 +10,15 @@ import Layout from './Pages/Layout'
 import RemoveObject from './Pages/RemoveObject'
 import Community from './Pages/Community'
 import RemoveBackground from './Pages/RemoveBackground'
-
+import { useAuth } from '@clerk/clerk-react'
+import { useEffect } from 'react'
+import {Toaster} from 'react-hot-toast'
 
 const App = () => {
+  
   return (
     <div>
+      <Toaster />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/ai" element={<Layout />}>
