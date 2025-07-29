@@ -1,5 +1,3 @@
-# 🚀 QuickAI - AI-Powered Content Creation Platform
-
 <div align="center">
 
 ![QuickAI Logo](client/src/assets/logo.svg)
@@ -12,9 +10,10 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.1.11-38B2AC.svg)](https://tailwindcss.com/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black.svg)](https://vercel.com/)
 
-[Live Demo](#) • [Documentation](#) • [Report Bug](#) • [Request Feature](#)
+[Live Demo](https://quick-ai-liard-five.vercel.app/ai) • [Backend API](http://quick-ai-server-rho-six.vercel.app/) • [Report Bug](#) • [Request Feature](#)
 
 </div>
+
 
 ---
 
@@ -29,8 +28,7 @@
 - [🎯 Key Features Deep Dive](#-key-features-deep-dive)
 - [📊 Performance & Scalability](#-performance--scalability)
 - [🔒 Security Features](#-security-features)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+
 
 ---
 
@@ -153,16 +151,16 @@
 <div align="center">
 
 ### 🏠 Homepage
-![Homepage](client/src/assets/gradientBackground.png)
+![Homepage](client/src/assets/Home.png)
 
 ### 🤖 AI Tools Dashboard
-![Dashboard](client/src/assets/ai_gen_img_1.png)
+![Dashboard](client/src/assets/DashBoard.png)
 
 ### ✍️ Article Generation
-![Article Generation](client/src/assets/ai_gen_img_2.png)
+![Article Generation](client/src/assets/Article.png)
 
 ### 🎨 Image Generation
-![Image Generation](client/src/assets/ai_gen_img_3.png)
+![Image Generation](client/src/assets/Images.png)
 
 </div>
 
@@ -183,8 +181,10 @@ QuickAI/
 │   ├── controllers/       # Business logic
 │   ├── routes/           # API endpoints
 │   ├── configs/          # Database & service configs
-│   ├── middlewares/      # Custom middleware
-│   └── server.js         # Express server
+│   ├── middlewares/   # Custom middleware
+    ├── dev-server.js
+│   └── api
+        ├── server.js                  # Express server
 └── README.md
 ```
 
@@ -334,30 +334,6 @@ vercel server/ --prod
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### **Development Setup**
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-### **Code Standards**
-- **ESLint**: Code linting and formatting
-- **Prettier**: Consistent code style
-- **TypeScript**: Type safety (planned)
-- **Testing**: Jest and React Testing Library
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
 
 ## 🙏 Acknowledgments
 
@@ -372,16 +348,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **Project Link**: [https://github.com/yourusername/quickai](https://github.com/yourusername/quickai)
-- **Live Demo**: [https://quickai.vercel.app](https://quickai.vercel.app)
-- **Email**: your.email@example.com
-- **LinkedIn**: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- **Project Link**: [https://github.com/Dakshj04/quickai](https://github.com/yourusername/quickai)
+- **Live Demo**: [https://quickai.vercel.app](https://quick-ai-liard-five.vercel.app/ai)
+- **Email**: 0408jaindaksh@gmail.com
+- **LinkedIn**: https://www.linkedin.com/in/daksh-jain-7a4327259/
 
 ---
 
 <div align="center">
 
-**Made with ❤️ by [Your Name]**
+**Made with ❤️ by Daksh Jain**
 
 ⭐ **Star this repository if you found it helpful!**
 
