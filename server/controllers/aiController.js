@@ -168,108 +168,72 @@ export const removeImageBackground = async (req, res) => {
 };
 
 export const removeImageObject = async (req, res) => {
-    try {
-        console.log('=== removeImageObject called ===');
-        console.log('req.file:', req.file);
-        console.log('req.body:', req.body);
-        
-        const { userId } = req.auth();
-        const plan = req.plan;
-        const image = req.file;
-        const { object } = req.body;
-        
-        // Validate inputs
-        if (!image) {
-            console.log('ERROR: No image file received');
-            return res.status(400).json({ success: false, message: "No image file received" });
-        }
-        
-        if (!object) {
-            console.log('ERROR: No object specified');
-            return res.status(400).json({ success: false, message: "Please specify an object to remove" });
-        }
-        
-        if (plan !== 'premium') {
-            return res.status(403).json({ success: false, message: "This feature is only available on premium subscriptions"});
-        }  
-        
-        console.log('Uploading to cloudinary:', image.path);
-        
-        // Upload to Cloudinary with error handling
-        let uploadResult;
-        try {
-            uploadResult = await cloudinary.uploader.upload(image.path, {
-                folder: 'object-removal', // Organize uploads
-                resource_type: 'image'
-            });
-            console.log('Cloudinary upload result:', uploadResult);
-        } catch (cloudinaryError) {
-            console.error('Cloudinary upload error:', cloudinaryError);
-            return res.status(500).json({ success: false, message: "Failed to upload image to cloud storage" });
-        }
+  try {
+    console.log('=== removeImageObject called ===');
+    console.log('req.file:', req.file);
+    console.log('req.body:', req.body);
 
-        const { public_id } = uploadResult;
-        
-        // Generate transformation URL with proper syntax
-        let imageUrl;
-        try {
-            // Clean the object name for transformation - more thorough cleaning
-            const cleanObject = object
-                .toLowerCase()
-                .replace(/[^a-z0-9\s]/g, '') // Remove special characters
-                .replace(/\s+/g, '_') // Replace spaces with underscores
-                .trim();
-            
-            console.log('Original object:', object);
-            console.log('Clean object name:', cleanObject);
-            console.log('Public ID:', public_id);
-            
-            // For gen_remove, the correct syntax is: e_gen_remove:prompt_<object_name>
-            imageUrl = cloudinary.url(public_id, {
-                transformation: [
-                    { 
-                        effect: `gen_remove:prompt_${cleanObject}`
-                    }
-                ],
-                resource_type: 'image',
-                secure: true
-            });
-            
-            console.log('Generated imageUrl with prompt syntax:', imageUrl);
-            
-        } catch (transformError) {
-            console.error('Cloudinary transformation error:', transformError);
-            return res.status(500).json({ success: false, message: "Failed to process image transformation" });
-        }
-        
-        // Save to database with error handling
-        try {
-            await sql`insert into creations (user_id, prompt, content, type) values (${userId}, ${`Remove ${object} from image`}, ${imageUrl}, 'image')`;
-            console.log('Successfully saved to database');
-        } catch (dbError) {
-            console.error('Database error:', dbError);
-            console.log('Image processed successfully but failed to save to database');
-        }
+    const { userId } = req.auth();
+    const plan = req.plan;
+    const image = req.file;
+    const { object } = req.body;
 
-        // Clean up temporary file
-        try {
-            if (image.path) {
-                const fs = await import('fs');
-                fs.unlinkSync(image.path);
-                console.log('Temporary file cleaned up');
-            }
-        } catch (cleanupError) {
-            console.log('Failed to clean up temporary file:', cleanupError.message);
-        }
-
-        res.json({ success: true, content: imageUrl });
-        
-    } catch (error) {
-        console.error('Controller error:', error.message);
-        console.error('Full error:', error);
-        res.status(500).json({ success: false, message: "Internal server error occurred" });
+    if (!image) {
+      return res.status(400).json({ success: false, message: "No image file received" });
     }
-}
+
+    if (!object) {
+      return res.status(400).json({ success: false, message: "Please specify an object to remove" });
+    }
+
+    if (plan !== 'premium') {
+      return res.status(403).json({ success: false, message: "This feature is only available on premium subscriptions" });
+    }
+
+    const dataUri = `data:${image.mimetype};base64,${image.buffer.toString('base64')}`;
+
+    let uploadResult;
+    try {
+      uploadResult = await cloudinary.uploader.upload(dataUri, {
+        folder: 'object-removal',
+        resource_type: 'image'
+      });
+      console.log('Cloudinary upload result:', uploadResult);
+    } catch (cloudinaryError) {
+      console.error('Cloudinary upload error:', cloudinaryError);
+      return res.status(500).json({ success: false, message: "Failed to upload image to cloud storage" });
+    }
+
+    const { public_id } = uploadResult;
+
+    const cleanObject = object
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .replace(/\s+/g, '_')
+      .trim();
+
+    const imageUrl = cloudinary.url(public_id, {
+      transformation: [
+        { effect: `gen_remove:prompt_${cleanObject}` }
+      ],
+      resource_type: 'image',
+      secure: true
+    });
+
+    try {
+      await sql`insert into creations (user_id, prompt, content, type) values (${userId}, ${`Remove ${object} from image`}, ${imageUrl}, 'image')`;
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+    }
+
+    res.json({ success: true, content: imageUrl });
+
+  } catch (error) {
+    console.error('Controller error:', error.message);
+    res.status(500).json({ success: false, message: "Internal server error occurred" });
+  }
+};
+
 export const resumeReview = async (req, res) => {
     try {
         console.log('=== resumeReview called ===');
