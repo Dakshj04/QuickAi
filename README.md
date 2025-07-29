@@ -51,7 +51,6 @@
 
 ### 🎨 **Modern UI/UX**
 - **Responsive Design**: Works perfectly on all devices
-- **Dark/Light Mode**: Customizable theme preferences
 - **Real-time Updates**: Instant feedback and notifications
 - **Intuitive Interface**: User-friendly design with smooth animations
 
