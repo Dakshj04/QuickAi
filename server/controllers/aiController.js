@@ -132,36 +132,41 @@ export const generateImage = async (req, res) => {
         res.json({ success: false, message: error.message }) 
     }
 }
-export const removeImageBackground = async (req, res) => {
-    try {
-        const { userId } = req.auth();
-        const plan = req.plan;
-        const image = req.file;
-        
-        if (plan !== 'premium') {
-            return res.json({ success: false, message: "This feature is only available on premium subscriptions"});
-        }  
-         
-        
+export const removeImageBackground = async (req, res) => { 
+  try {
+    const { userId } = req.auth();
+    const plan = req.plan;
+    const image = req.file;
 
-        const {secure_url} = await cloudinary.uploader.upload(image.path,{
-            transformation: [
-                {
-                    effect:'background_removal',
-                    background_removal:'remove_the_background'
-                }
-            ]
-        });
-
-        // FIX: Use secure_url instead of content
-        await sql`insert into creations (user_id, prompt, content, type) values (${userId}, 'Remove background from image', ${secure_url}, 'image')`;
-
-        res.json({ success: true, content: secure_url })
-    } catch (error) {
-        console.log('Controller error:', error.message);
-        res.json({ success: false, message: error.message }) 
+    if (!image) {
+      return res.status(400).json({ success: false, message: "Image file is missing" });
     }
-}
+
+    if (plan !== 'premium') {
+      return res.json({ success: false, message: "This feature is only available on premium subscriptions" });
+    }
+
+    const dataUri = `data:${image.mimetype};base64,${image.buffer.toString('base64')}`;
+
+    const { secure_url } = await cloudinary.uploader.upload(dataUri, {
+      transformation: [
+        {
+          effect: 'background_removal',
+          background_removal: 'remove_the_background'
+        }
+      ]
+    });
+
+    await sql`INSERT INTO creations (user_id, prompt, content, type) VALUES (${userId}, 'Remove background from image', ${secure_url}, 'image')`;
+
+    res.json({ success: true, content: secure_url });
+
+  } catch (error) {
+    console.error('Controller error:', error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export const removeImageObject = async (req, res) => {
     try {
         console.log('=== removeImageObject called ===');
