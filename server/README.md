@@ -151,16 +151,16 @@
 <div align="center">
 
 ### 🏠 Homepage
-![Homepage](client/src/assets/gradientBackground.png)
+![Homepage](client/src/assets/Home.png)
 
 ### 🤖 AI Tools Dashboard
-![Dashboard](client/src/assets/ai_gen_img_1.png)
+![Dashboard](client/src/assets/DashBoard.png)
 
 ### ✍️ Article Generation
-![Article Generation](client/src/assets/ai_gen_img_2.png)
+![Article Generation](client/src/assets/Article.png)
 
 ### 🎨 Image Generation
-![Image Generation](client/src/assets/ai_gen_img_3.png)
+![Image Generation](client/src/assets/Images.png)
 
 </div>
 
